@@ -185,91 +185,19 @@ var preset = {
     gap:10,
     nOfChosen:5
 }
+preset.size_x = (Math.min(innerWidth, innerHeight)-100)/preset.ncol
+preset.size_y = (Math.min(innerWidth, innerHeight)-100)/preset.nrow
 preset.x = innerWidth / 2 - (preset.size_x+preset.gap)*preset.ncol/2
 
-function game(preset){
-
-    this.grid = new gridOfBlocks(preset.x, preset.y, preset.size_x, preset.size_y, preset.ncol, preset.nrow, preset.gap)
-    
-    this.grid.ranomize(preset.nOfChosen);
-    this.grid.hide();
-    this.grid.drawBlocks();
-    this.over = true;
-
-    
-    //play(this.grid);
-}
-
-function donothing(){
-    return 0;
-}
 
 trygrid = new gridOfBlocks(preset.x, preset.y, preset.size_x, preset.size_y, preset.ncol, preset.nrow, preset.gap)
 trygrid.ranomize(preset.nOfChosen);
-
-var gridshown = false;
-
-// function play() {
-//         requestAnimationFrame(play);
-//         c.clearRect(0, 0, innerWidth, innerHeight);
-//         //this.grid.drawBlocks();
-
-//         //pokaż zaznaczone
-
-//         if(! gridshown)
-//         {
-//             //trygrid.hide();
-//             trygrid.drawBlocks();
-            
-//             gridshown = true;
-//             trygrid.hide()
-
-            
-           
-//         }
-//         // console.log("czekam ")
-//         // sleep(10000)
-//         // console.log("pokazuje");
-        
-
-//         // if(this.grid.numberOfClicked = preset.numberOfClicked){
-//         //     ;
-//         // }
-        
-//         trygrid.drawBlocks();
-// }
-// play()
-
-
-// tryBlock = new block(100, 100, 100, 100);
-// tryBlock.updateColour();
-// tryBlock.draw();
-
-
-// trygrid.drawBlocks();
-//trygrid.hide();
-//trygrid.ranomize(50);
-
-//gm = new game(preset);
-
-
-var mouse = {
-    x: undefined,
-    y: undefined
-}
-// window.addEventListener('mousemove', function(event){
-//     console.log(event)
-//     mouse.x = event.x;
-//     mouse.y = event.y;
-
-//  });
 
 window.addEventListener('mousedown', function(event){
     if(!visible && !makenew){trygrid.update(event.x, event.y);}
 })
 
 window.addEventListener('keydown', function(event){
-    //trygrid.hide();
     if(makenew)
     {
         trygrid.unchose();
