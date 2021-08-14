@@ -177,7 +177,7 @@ function sleep(milliseconds) {
 
 var preset = {
     x:100, 
-    y:50, 
+    y:20, 
     size_x:70, 
     size_y:70, 
     ncol:5, 
