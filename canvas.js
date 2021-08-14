@@ -5,7 +5,7 @@ canvas.height = window.innerHeight;
 
 var c = canvas.getContext('2d');
 
-const colours = ["green", "grey", "red", "grey"]
+const colours = ["green", "grey", "red", "black"]
 function block(x, y, size_x, size_y){
     this.x = x;
     this.y = y;
@@ -50,8 +50,8 @@ function block(x, y, size_x, size_y){
     {
         if(this.x < mouse_x && 
             this.x + this.size_x > mouse_x &&
-            this.y < mouse_y && 
-            this.y + this.size_y > mouse_y)
+            this.y < mouse_y+20 && 
+            this.y + this.size_y > mouse_y+20)
             {
                 this.clicked = !this.clicked;
             }
@@ -90,35 +90,246 @@ function gridOfBlocks(x, y, size_x, size_y, ncol, nrow, gap)
             this.blocks[i].checkIfClicked(mx, my);
         }
     }
+    this.hide = function()
+    {
+        for(var i = 0; i < this.nrow*this.ncol; i++)
+        {
+            this.blocks[i].hidden = !this.blocks[i].hidden;
+        }
+    }
+    this.ranomize = function(k){
+        var chosen = choose(nArray(this.ncol*this.nrow), k)
+        console.log();
+        for(var i = 0; i < k; i++)
+        {
+            this.blocks[chosen[i]].chosen = true;
+        }
+    }
+    this.checkIfCorrect = function(){
+        var correct = true;
+        for(var i = 0; i < this.ncol*this.ncol; i++){
+            if(this.blocks[i].clicked && !this.blocks[i].chosen)
+            {
+                correct = false;
+            }
+        }
+        return correct;
+    }
 
+    this.numberOfClicked = function(){
+        var clicked = 0;
+        for(var i = 0; i < this.ncol*this.ncol; i++){
+            if(this.blocks[i].clicked)
+            {
+                clicked++;
+            }
+        }
+        return clicked;
+    }
+
+    this.unclick = function(){
+        for(var i = 0; i < this.nrow*this.ncol; i++)
+        {
+            this.blocks[i].clicked = false;
+        }
+    }
+
+    this.unchose = function(){
+        for(var i = 0; i < this.nrow*this.ncol; i++)
+        {
+            this.blocks[i].chosen = false;
+        }
+    }
 }
+
+
+function nArray(n){
+    arr = [];
+    for(var i =0; i < n; i++)
+    {
+        arr.push(i);
+    }
+    return arr;
+}
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+function choose(array, k){
+    var choise = shuffleArray(array).slice(0,k)
+    return choise;
+}
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+  }
+
+var preset = {
+    x:100, 
+    y:50, 
+    size_x:70, 
+    size_y:70, 
+    ncol:5, 
+    nrow:5, 
+    gap:10,
+    nOfChosen:5
+}
+preset.x = innerWidth / 2 - (preset.size_x+preset.gap)*preset.ncol/2
+
+function game(preset){
+
+    this.grid = new gridOfBlocks(preset.x, preset.y, preset.size_x, preset.size_y, preset.ncol, preset.nrow, preset.gap)
+    
+    this.grid.ranomize(preset.nOfChosen);
+    this.grid.hide();
+    this.grid.drawBlocks();
+    this.over = true;
+
+    
+    //play(this.grid);
+}
+
+function donothing(){
+    return 0;
+}
+
+trygrid = new gridOfBlocks(preset.x, preset.y, preset.size_x, preset.size_y, preset.ncol, preset.nrow, preset.gap)
+trygrid.ranomize(preset.nOfChosen);
+
+var gridshown = false;
+
+// function play() {
+//         requestAnimationFrame(play);
+//         c.clearRect(0, 0, innerWidth, innerHeight);
+//         //this.grid.drawBlocks();
+
+//         //pokaż zaznaczone
+
+//         if(! gridshown)
+//         {
+//             //trygrid.hide();
+//             trygrid.drawBlocks();
+            
+//             gridshown = true;
+//             trygrid.hide()
+
+            
+           
+//         }
+//         // console.log("czekam ")
+//         // sleep(10000)
+//         // console.log("pokazuje");
+        
+
+//         // if(this.grid.numberOfClicked = preset.numberOfClicked){
+//         //     ;
+//         // }
+        
+//         trygrid.drawBlocks();
+// }
+// play()
+
 
 // tryBlock = new block(100, 100, 100, 100);
 // tryBlock.updateColour();
 // tryBlock.draw();
 
-trygrid = new gridOfBlocks(50, 50, 50, 50, 3, 3, 10)
+
 // trygrid.drawBlocks();
+//trygrid.hide();
+//trygrid.ranomize(50);
+
+//gm = new game(preset);
 
 
 var mouse = {
     x: undefined,
     y: undefined
 }
-window.addEventListener('mousemove', function(event){
-    console.log(event)
-    mouse.x = event.x;
-    mouse.y = event.y;
+// window.addEventListener('mousemove', function(event){
+//     console.log(event)
+//     mouse.x = event.x;
+//     mouse.y = event.y;
 
-});
+//  });
 
 window.addEventListener('mousedown', function(event){
-    trygrid.update(mouse.x, mouse.y);
+    if(!visible && !makenew){trygrid.update(event.x, event.y);}
 })
+
+window.addEventListener('keydown', function(event){
+    //trygrid.hide();
+    if(makenew)
+    {
+        trygrid.unchose();
+        trygrid.ranomize(preset.nOfChosen);
+        trygrid.unclick();
+        makenew = false;
+
+        visible = true;
+        trygrid.hide();
+        setTimeout(() => { trygrid.hide(); 
+        visible = false;
+        }, 2000);}
+})
+
+
+var makenew = false;
+
+var visible = true;
+trygrid.hide();
+setTimeout(() => { trygrid.hide(); 
+visible = false;
+}, 2000);
+
 
 function animate(){
     requestAnimationFrame(animate);
     c.clearRect(0, 0, innerWidth, innerHeight);
+
+    if(!trygrid.checkIfCorrect())
+    {
+        c.fillStyle = "red";
+        c.fillRect(0, 0, innerWidth, innerHeight);
+    }
+    else{
+        if(trygrid.numberOfClicked() ==preset.nOfChosen )
+        {
+            c.fillStyle = "green";
+            c.fillRect(0, 0, innerWidth, innerHeight);
+            makenew = true;
+        }
+    }
+
+    if(makenew)
+    {
+        setTimeout(() => { 
+            trygrid.unchose();
+        trygrid.ranomize(preset.nOfChosen);
+        trygrid.unclick();
+        makenew = false;
+
+        visible = true;
+        trygrid.hide();
+        setTimeout(() => { trygrid.hide(); 
+        visible = false;
+        }, 1000);
+            }, 1000);
+    }
+
+
+
     trygrid.drawBlocks();
 }
 
